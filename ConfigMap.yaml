@@ -3,7 +3,7 @@ apiVersion: v1
 metadata:
   name: backend
 data:
-  DATABASE_URL: 'postgresql://postgresWaspDevUser:postgresWaspDevPass@database-service.svc.cluster.local:5432/OpenSaaS-a3167729ef'
+  DATABASE_URL: 'postgresql://postgresWaspDevUser:postgresWaspDevPass@database-service:5432/OpenSaaS-a3167729ef'
   REACT_APP_API_URL: 'http://backend-service.svc.cluster.local:3001'
   SMTP_HOST: smtp.gmail.com
   SMTP_PORT: '25'
