@@ -1,0 +1,14 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: backend
+data:
+  DATABASE_URL: 'postgresql://postgresWaspDevUser:postgresWaspDevPass@database-service.svc.cluster.local:5432/OpenSaaS-a3167729ef'
+  REACT_APP_API_URL: 'http://backend-service.svc.cluster.local:3001'
+  SMTP_HOST: smtp.gmail.com
+  SMTP_PORT: '25'
+  SMTP_USERNAME: dev@neutron-it.fr
+  WASP_SERVER_URL: 'https://backend.apps.neutron-sno-office.intraneutron.fr'
+  WASP_WEB_CLIENT_URL: 'https://frontend-route.apps.neutron-sno-office.intraneutron.fr'
+  POSTGRESQL_DATABASE: 'OpenSaaS-a3167729ef'
+  POSTGRESQL_USER: 'postgresWaspDevUser'

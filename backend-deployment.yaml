@@ -1,0 +1,91 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: backend
+      annotations:
+        openshift.openshift.io/restartedAt: '2025-02-18T14:59:30.637Z'
+    spec:
+      containers:
+        - name: container
+          image: 'quay.io/neutron-security-plus/backend/finalback1:latest'
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: backend
+                  key: DATABASE_URL
+            - name: SMTP_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: backend
+                  key: SMTP_PORT
+            - name: SMTP_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: backend
+                  key: SMTP_USERNAME
+            - name: WASP_SERVER_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: backend
+                  key: WASP_SERVER_URL
+            - name: REACT_APP_API_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: backend
+                  key: REACT_APP_API_URL
+            - name: WASP_WEB_CLIENT_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: backend
+                  key: WASP_WEB_CLIENT_URL
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: dbsecret
+                  key: JWT_SECRET
+            - name: SMTP_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: dbsecret
+                  key: SMTP_PASSWORD
+            - name: SMTP_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: backend
+                  key: SMTP_HOST
+            - name: STRIPE_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: dbsecret
+                  key: STRIPE_API_KEY
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: Always
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
+      schedulerName: default-scheduler
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600
+

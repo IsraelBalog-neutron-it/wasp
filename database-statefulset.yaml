@@ -1,0 +1,81 @@
+kind: StatefulSet
+apiVersion: apps/v1
+metadata:
+  name: database
+spec:
+  serviceName: database
+  revisionHistoryLimit: 10
+  persistentVolumeClaimRetentionPolicy:
+    whenDeleted: Retain
+    whenScaled: Retain
+  volumeClaimTemplates:
+    - kind: PersistentVolumeClaim
+      apiVersion: v1
+      metadata:
+        name: db-storage
+        creationTimestamp: null
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 5Gi
+        volumeMode: Filesystem
+      status:
+        phase: Pending
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: database
+      annotations:
+        openshift.openshift.io/restartedAt: '2025-02-18T10:03:07.948Z'
+    spec:
+      volumes:
+        - name: db-storage-database-0
+          persistentVolumeClaim:
+            claimName: db-storage-database-0
+      containers:
+        - resources: {}
+          terminationMessagePath: /dev/termination-log
+          name: container
+          env:
+            - name: POSTGRESQL_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: backend
+                  key: POSTGRESQL_DATABASE
+            - name: POSTGRESQL_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: backend
+                  key: POSTGRESQL_USER
+            - name: POSTGRESQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: dbsecret
+                  key: POSTGRESQL_PASSWORD
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: db-storage-database-0
+              mountPath: /var/lib/postgresql
+          terminationMessagePolicy: File
+          image: registry.redhat.io/rhel9/postgresql-16
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
+      schedulerName: default-scheduler
+  podManagementPolicy: OrderedReady
+  replicas: 3
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      partition: 0
+  selector:
+    matchLabels:
+      app: database
+
